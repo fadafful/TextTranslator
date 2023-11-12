@@ -1,0 +1,98 @@
+﻿@model IEnumerable<TextTranslator.Models.Translator>
+
+@{
+    ViewData["Title"] = "Translators";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-1.13.7/af-2.6.0/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/cr-1.7.0/date-1.5.1/fc-4.3.0/fh-3.4.0/kt-2.11.0/r-2.5.0/rg-1.4.1/rr-1.4.1/sc-2.3.0/sb-1.6.0/sp-2.2.0/sl-1.7.0/sr-1.3.0/datatables.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-1.13.7/af-2.6.0/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/cr-1.7.0/date-1.5.1/fc-4.3.0/fh-3.4.0/kt-2.11.0/r-2.5.0/rg-1.4.1/rr-1.4.1/sc-2.3.0/sb-1.6.0/sp-2.2.0/sl-1.7.0/sr-1.3.0/datatables.min.js"></script>
+<link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet" />
+<style>
+    .m-right{
+        margin-right: 5px;
+    }
+
+    .top-translator {
+        display: none;
+    }
+</style>
+
+<h1>Translators</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
+</p>
+
+<div class="top-translator mt-3 mb-3">
+    <span><b>Translator:</b> </span><span id="topT"></span> &nbsp;&nbsp; <span><b>Usage Count:</b> </span><span id="uCount"></span>
+</div>
+
+<table id="translatorsTable" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Link</th>
+            <th>Date Created</th>
+            <th>Date Modified</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<scipt src="https://code.jquery.com/jquery-3.7.0.js"></scipt>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script>
+    const link = location.protocol + '//' + location.host;
+
+    // Function to get cities on page load if there's a default state selected
+    function GetMostUsedTranslator() {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetMostUsedTranslator", "Translators")',
+            dataType: 'json',
+            data: {},
+            success: function(result) {
+                //console.log(result[0]);
+                $('.top-translator').css({ "display": "block" });
+                $('#topT').text(result[0].translatorName);
+                $('#uCount').text(result[0].usageCount);
+            },  
+            error: function(err) {
+                alert('Failed to retrieve top translator: ' + err.statusText);
+            }
+        });
+    }
+
+
+    // Get translators
+    GetMostUsedTranslator();
+
+    $('#translatorsTable').DataTable({
+        "ajax": {
+            "url": "@Url.Action("GetTranslatorList", "Translators")",
+            "type": "GET",
+            "datatype": "json"
+        },
+        "columns": [
+            { "data": "name", "width": "30%" },
+            { "data": "url", "width": "30%" },
+            { "data": "dateCreated", "width": "15%" },
+            { "data": "dateModified", "width": "15%" },
+            {
+                "data": "id",
+                "width": "10%",
+                "render": function(data, type, row) {
+                    return `<a class="btn btn-success btn-sm m-right" href="${link}/Translators/Details/${data}"><span class="fa fa-eye"></span></a>` +
+                        `<a class="btn btn-primary btn-sm m-right" href="${link}/Translators/Edit/${data}"><span class="fa fa-edit"></span></a>` +
+                        `<a class="btn btn-danger btn-sm" href="${link}/Translators/Delete/${data}"><span class="fa fa-trash"></span></a>`
+                }
+            }
+        ]
+    });
+
+</script>

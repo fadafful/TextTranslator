@@ -1,0 +1,62 @@
+﻿@model IEnumerable<TextTranslator.Models.Translation>
+
+@{
+    ViewData["Title"] = "Translations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-1.13.7/af-2.6.0/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/cr-1.7.0/date-1.5.1/fc-4.3.0/fh-3.4.0/kt-2.11.0/r-2.5.0/rg-1.4.1/rr-1.4.1/sc-2.3.0/sb-1.6.0/sp-2.2.0/sl-1.7.0/sr-1.3.0/datatables.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-1.13.7/af-2.6.0/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/cr-1.7.0/date-1.5.1/fc-4.3.0/fh-3.4.0/kt-2.11.0/r-2.5.0/rg-1.4.1/rr-1.4.1/sc-2.3.0/sb-1.6.0/sp-2.2.0/sl-1.7.0/sr-1.3.0/datatables.min.js"></script>
+<link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet" />
+<style>
+    .m-right{
+        margin-right: 5px;
+    }
+</style>
+
+<h1>Translations</h1>
+
+<table id="translationsTable" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>Text</th>
+            <th>Result</th>
+            <th>Translator</th>
+            <th>Date Created</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<scipt src="https://code.jquery.com/jquery-3.7.0.js"></scipt>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script>
+    const link = location.protocol + '//' + location.host;
+    $('#translationsTable').DataTable({
+        "ajax": {
+            "url": "@Url.Action("GetTranslations", "Translations")",
+            "type": "GET",
+            "datatype": "json"
+        },
+        "columns": [
+            { "data": "text", "width": "30%" },
+            { "data": "result", "width": "30%" },
+            { "data": "name", "width": "15%" },
+            { "data": "dateCreated", "width": "15%" },
+            {
+                "data": "id",
+                "width": "10%",
+                "render": function(data, type, row) {
+                    return `<a class="btn btn-success btn-sm m-right" href="${link}/Translations/Details/${data}"><span class="fa fa-eye"></span></a>` +
+                        `<a class="btn btn-primary btn-sm m-right" href="${link}/Translations/Edit/${data}"><span class="fa fa-edit"></span></a>` +
+                        `<a class="btn btn-danger btn-sm" href="${link}/Translations/Delete/${data}"><span class="fa fa-trash"></span></a>`
+                }
+            }
+        ]
+    });
+
+</script>
